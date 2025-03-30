@@ -6,8 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.InetAddress;
@@ -15,7 +14,6 @@ import java.net.InetAddress;
 public class Server extends JFrame {
     private static final JTextArea logWindow = new JTextArea();
     private static final JTextField cmdLine = new JTextField();
-    private static final ArrayList<Socket> clients = new ArrayList<>();
 
     private ServerSocket socket;
     private String log = "";
@@ -47,13 +45,12 @@ public class Server extends JFrame {
             logMessage("Server Started.\nIP:"+ address.getHostAddress()+" Port: "+port);
 
             while (!socket.isClosed()){
-                Socket incoming = socket.accept();
-                String addy = incoming.getInetAddress().getHostAddress();
+                Socket in = socket.accept();
+                String addy = in.getInetAddress().getHostAddress();
                 logMessage("New Connection Received: "+addy);
-                OutputStream stream = incoming.getOutputStream();
-                PrintWriter writer = new PrintWriter(stream, true);
-                writer.println("Enter A Username: ");
-                clients.add(incoming);
+                ClientHandler handler = new ClientHandler(in);
+                Thread thread = new Thread(handler);
+                thread.start();
             }
             
         } catch (IOException e){logMessage(e.getMessage());}
