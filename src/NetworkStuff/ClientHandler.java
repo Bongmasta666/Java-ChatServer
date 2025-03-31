@@ -25,7 +25,7 @@ public class ClientHandler implements Runnable{
             writer.println("Enter a Username To Begin..");
             while (username.isEmpty()){
                 String in = reader.readLine().strip();
-                if (in.length() > 4) {
+                if (in.length() > 3) {
                     if (!Server.handlerMap.containsKey(in)){
                         username = in;
                         Server.handlerMap.put(username, this);
@@ -43,7 +43,7 @@ public class ClientHandler implements Runnable{
         while (cSocket.isConnected()){
             try{
                 userIn = reader.readLine();
-                broadcast(userIn);
+                broadcast(username+": "+userIn);
             } catch (IOException e){
                 disconnect();
                 logError(e);
