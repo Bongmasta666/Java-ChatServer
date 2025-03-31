@@ -54,8 +54,8 @@ public class ClientHandler implements Runnable{
     }
 
     public void broadcast(String message){
-        for (ClientHandler c : Server.handlerMap.values()){
-            if (!c.username.equals(username)){
+        for (ClientHandler c : Server.handlerMap.values()) {
+            if (!c.username.equals(username)) {
                 c.writer.println(message);
             }
         }
