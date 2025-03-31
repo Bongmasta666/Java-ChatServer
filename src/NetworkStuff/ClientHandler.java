@@ -6,10 +6,11 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ClientHandler implements Runnable{
     public static ArrayList<ClientHandler> handlers = new ArrayList<>();
-
+    public static HashMap<String, ClientHandler> handlerMap = new HashMap<>();
     private String username = "";
     private Socket cSocket;
     private BufferedReader reader;
@@ -23,15 +24,16 @@ public class ClientHandler implements Runnable{
             writer.println("Enter a Username To Begin..");
             while (username.isEmpty()){
                 String in = reader.readLine().strip();
-                if (in.length() < 4) { // TODO: CHECK IF A USER ALREADY EXISTS
-                    writer.println("Name Must Be At least 4 Chars");
-                } else {username = in;}
+                if (in.length() > 4) {
+                    if (!handlerMap.containsKey(in)){
+                        username = in;
+                        handlerMap.put(username, this);
+                        writer.println("Welcome to Chat!");
+                        broadcast(username + " Has Entered The Chat");
+                    } else {writer.println("Username Has Been Taken");}
+                } else {writer.println("Name Must Be At least 4 Chars");}
             }
-            broadcast(username + " Has Entered The Chat");
-            handlers.add(this);
-        } catch (IOException e){
-            logError(e);
-        }
+        } catch (IOException e){logError(e);}
     }
 
     @Override public void run() {
@@ -67,9 +69,7 @@ public class ClientHandler implements Runnable{
             reader.close();
             writer.close();
             cSocket.close();
-        } catch (IOException e){
-            logError(e);
-        }
+        } catch (IOException e){logError(e);}
     }
 
     private void logError(IOException e){
