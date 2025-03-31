@@ -5,12 +5,8 @@ import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ClientHandler implements Runnable{
-    public static ArrayList<ClientHandler> handlers = new ArrayList<>();
-    public static HashMap<String, ClientHandler> handlerMap = new HashMap<>();
     private String username = "";
     private Socket cSocket;
     private BufferedReader reader;
@@ -21,13 +17,18 @@ public class ClientHandler implements Runnable{
             cSocket = s;
             reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
             writer = new PrintWriter(cSocket.getOutputStream(), true);
+        } catch (IOException e){logError(e);}
+    }
+
+    public void promptUsername(){
+        try{
             writer.println("Enter a Username To Begin..");
             while (username.isEmpty()){
                 String in = reader.readLine().strip();
                 if (in.length() > 4) {
-                    if (!handlerMap.containsKey(in)){
+                    if (!Server.handlerMap.containsKey(in)){
                         username = in;
-                        handlerMap.put(username, this);
+                        Server.handlerMap.put(username, this);
                         writer.println("Welcome to Chat!");
                         broadcast(username + " Has Entered The Chat");
                     } else {writer.println("Username Has Been Taken");}
@@ -37,6 +38,7 @@ public class ClientHandler implements Runnable{
     }
 
     @Override public void run() {
+        promptUsername();
         String userIn;
         while (cSocket.isConnected()){
             try{
@@ -52,7 +54,7 @@ public class ClientHandler implements Runnable{
     }
 
     public void broadcast(String message){
-        for (ClientHandler c : handlers){
+        for (ClientHandler c : Server.handlerMap.values()){
             if (!c.username.equals(username)){
                 c.writer.println(message);
             }
@@ -60,7 +62,7 @@ public class ClientHandler implements Runnable{
     }
 
     public void disconnect(){
-        handlers.remove(this);
+        Server.handlerMap.remove(username);
         broadcast(username + " Disconnected");
     }
 

@@ -10,8 +10,10 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.InetAddress;
+import java.util.HashMap;
 
 public class Server extends JFrame {
+    public static HashMap<String, ClientHandler> handlerMap = new HashMap<>();
     private static final JTextArea logWindow = new JTextArea();
     private static final JTextField cmdLine = new JTextField();
 
