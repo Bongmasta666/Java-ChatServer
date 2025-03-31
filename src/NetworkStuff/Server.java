@@ -18,6 +18,7 @@ public class Server extends JFrame {
     private ServerSocket socket;
     private String log = "";
 
+    public int userCount = 0;
     public Server(){
         logWindow.setPreferredSize(new Dimension(400, 320));
         logWindow.setBackground(Color.BLACK);
@@ -44,13 +45,15 @@ public class Server extends JFrame {
             InetAddress address = InetAddress.getLocalHost();
             logMessage("Server Started.\nIP:"+ address.getHostAddress()+" Port: "+port);
 
+            String[] tempNames = {"Bong", "Mike", "George"};
             while (!socket.isClosed()){
                 Socket in = socket.accept();
                 String addy = in.getInetAddress().getHostAddress();
                 logMessage("New Connection Received: "+addy);
-                ClientHandler handler = new ClientHandler(in);
+                ClientHandler handler = new ClientHandler(in, tempNames[userCount]);
                 Thread thread = new Thread(handler);
                 thread.start();
+                userCount +=1;
             }
             
         } catch (IOException e){logMessage(e.getMessage());}

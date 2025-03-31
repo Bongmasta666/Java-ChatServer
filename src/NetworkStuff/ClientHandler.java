@@ -15,14 +15,14 @@ public class ClientHandler implements Runnable{
     private BufferedReader reader;
     private PrintWriter writer;
 
-    public ClientHandler(Socket s){
+    public ClientHandler(Socket s, String username){
         try{
             cSocket = s;
             reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
             writer = new PrintWriter(cSocket.getOutputStream(), true);
             handlers.add(this);
-//            username = reader.readLine();
-//            broadcast(username + " Has Entered The Chat");
+            this.username = username;
+            broadcast(username + " Has Entered The Chat");
         } catch (IOException e){
             logError(e);
         }
