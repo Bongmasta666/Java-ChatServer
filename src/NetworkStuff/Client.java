@@ -20,7 +20,7 @@ public class Client extends JFrame {
     private static final JTextArea logWindow = new JTextArea();
     private static final JTextField userInput = new JTextField();
     private static final String hostAddress = "127.0.0.1";
-    private static final int hostPort = 8888;
+    private static final int hostPort = 59125;
 
     private Socket hostSocket;
     private BufferedReader reader;

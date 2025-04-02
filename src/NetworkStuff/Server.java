@@ -13,12 +13,12 @@ import java.net.InetAddress;
 import java.util.HashMap;
 
 public class Server extends JFrame {
-    public static HashMap<String, ClientHandler> handlerMap = new HashMap<>();
+    public static final HashMap<String, ClientHandler> handlerMap = new HashMap<>();
     private static final JTextArea logWindow = new JTextArea();
     private static final JTextField cmdLine = new JTextField();
-
-    private ServerSocket socket;
-    private String log = "";
+    private static ServerSocket socket;
+    private static int serverPort = 59125;
+    private static String log = "";
 
     public Server(){
         logWindow.setPreferredSize(new Dimension(400, 320));
@@ -37,7 +37,7 @@ public class Server extends JFrame {
         setLocationRelativeTo(null);
         setTitle("Bongs Server");
         setVisible(true);
-        openSocket(59125);
+        openSocket(serverPort);
     }
 
     private void openSocket(int port) {
@@ -45,20 +45,18 @@ public class Server extends JFrame {
             socket = new ServerSocket(port);
             InetAddress address = InetAddress.getLocalHost();
             logMessage("Server Started.\nIP:"+ address.getHostAddress()+" Port: "+port);
-
-            while (!socket.isClosed()){
+            while (!socket.isClosed()) {
                 Socket in = socket.accept();
                 String addy = in.getInetAddress().getHostAddress();
-                logMessage("New Connection Received: "+addy);
+                logMessage("New Connection Received: " + addy);
                 ClientHandler handler = new ClientHandler(in);
                 Thread thread = new Thread(handler);
                 thread.start();
             }
-            
         } catch (IOException e){logMessage(e.getMessage());}
     }
 
-    public void logMessage(String message){
+    public static void logMessage(String message){
         log += message+"\n";
         logWindow.setText(log);
     }
